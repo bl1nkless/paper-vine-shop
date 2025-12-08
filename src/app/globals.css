@@ -1,0 +1,114 @@
+@import "tailwindcss";
+
+:root {
+  --bg: #f8f5f0;
+  --text: #1f1a17;
+  --muted: #6b625a;
+  --olive: #778a54;
+  --terra: #c56744;
+  --sand: #e9dfd4;
+  --stroke: #e2d7cd;
+  color-scheme: light;
+}
+
+@theme inline {
+  --color-background: var(--bg);
+  --color-foreground: var(--text);
+  --font-sans: var(--font-body);
+  --font-serif: var(--font-display);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 20% 20%, #f2e9de 0, transparent 25%),
+    radial-gradient(circle at 80% 10%, #f7eee6 0, transparent 20%),
+    radial-gradient(circle at 85% 80%, #efe6dc 0, transparent 25%), var(--bg);
+  color: var(--text);
+  font-family:
+    var(--font-body),
+    "Inter",
+    system-ui,
+    -apple-system,
+    sans-serif;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-display), "Playfair Display", Georgia, serif;
+  letter-spacing: -0.01em;
+}
+
+a {
+  text-decoration: none;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.card-surface {
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid var(--stroke);
+  box-shadow: 0 20px 60px rgba(31, 26, 23, 0.08);
+  backdrop-filter: blur(4px);
+}
+
+.pill {
+  border-radius: 999px;
+  background: #f0e8de;
+  color: #5f564d;
+  padding: 0.35rem 0.9rem;
+  font-size: 0.9rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.serif-font {
+  font-family: var(--font-display), "Playfair Display", Georgia, serif;
+}
+
+.fade-in-up {
+  opacity: 0;
+  transform: translateY(16px);
+  animation: fade-in-up 0.8s ease-out forwards;
+}
+
+.animate-fade-in-up {
+  opacity: 0;
+  transform: translateY(16px);
+  animation: fade-in-up 0.9s ease-out forwards;
+}
+
+@keyframes fade-in-up {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  opacity: 0;
+  animation: fade-in 0.8s ease-out forwards;
+}
+
+@keyframes fade-in {
+  to {
+    opacity: 1;
+  }
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
