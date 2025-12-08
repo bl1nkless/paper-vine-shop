@@ -264,7 +264,7 @@ export default function Home() {
 
       <section id="about" className="bg-stone-100 py-20">
         <div className="mx-auto flex max-w-6xl flex-col items-center gap-12 px-4 md:flex-row">
-          <div className="relative w-full md:w-1/2">
+          <div className="relative w-full md:w-1/2 aspect-[3/4]">
             <div className="absolute -left-4 -top-4 h-full w-full rounded-lg border-2 border-stone-300" />
             <Image
               src="/author.jpg"
@@ -277,7 +277,7 @@ export default function Home() {
           <div className="w-full space-y-6 md:w-1/2">
             <h2 className="font-serif text-4xl text-stone-800">Про майстра</h2>
             <p className="text-lg leading-relaxed text-stone-600">
-              &ldquo;Привіт! Мене звати Олена. Вже понад 5 років я плету затишок
+              &ldquo;Привіт! Мене звати Оксана. Вже понад 5 років я плету затишок
               для ваших осель. Все почалося з одного кошика для доньки, а
               переросло в справжню любов до паперової лози. У кожному виробі —
               частинка мого тепла.&rdquo;
