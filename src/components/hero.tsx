@@ -5,7 +5,7 @@ import { buildWhatsAppLink } from "@/lib/whatsapp";
 
 export function Hero() {
   const whatsappHref = buildWhatsAppLink(
-    "Здравствуйте! Хочу посмотреть каталог Pletenie.Soul.",
+    "Вітаю! Хочу переглянути каталог Pletenie.Soul."
   );
 
   return (
@@ -14,21 +14,22 @@ export function Hero() {
       <div className="absolute -right-10 -top-10 h-52 w-52 rounded-full bg-gradient-to-br from-[#dca07a] to-[#7c8a54] opacity-30 blur-3xl" />
       <div className="relative grid gap-10 lg:grid-cols-[1fr,320px] lg:items-center">
         <div className="space-y-6">
-          <span className="pill">ручная работа • paper vine</span>
+          <span className="pill">ручна робота • paper vine</span>
           <h1 className="text-balance text-4xl font-semibold leading-tight sm:text-5xl">
-            Pletenie.Soul — интерьерные корзины, сумки и декор из бумажной лозы
+            Pletenie.Soul — інтер&apos;єрні кошики, сумки та декор з паперової
+            лози
           </h1>
           <p className="max-w-2xl text-lg text-stone-600">
-            Нежные фактуры, натуральные оттенки, продуманная форма. Все изделия
-            плетутся вручную, поэтому вы получаете уникальную вещь, созданную
-            специально под ваш дом.
+            Ніжні фактури, натуральні відтінки, продумана форма. Всі вироби
+            плетуться вручну, тому ви отримуєте унікальну річ, створену
+            спеціально для вашого дому.
           </p>
           <div className="flex flex-wrap items-center gap-4">
             <Link
               href="#catalog"
               className="inline-flex items-center gap-2 rounded-full bg-stone-900 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-stone-900/15 transition hover:-translate-y-0.5 hover:bg-stone-800"
             >
-              В каталог
+              До каталогу
               <ArrowRight size={16} />
             </Link>
             <Link
@@ -37,7 +38,7 @@ export function Hero() {
               className="inline-flex items-center gap-2 rounded-full border border-stone-300 bg-white px-5 py-3 text-sm font-semibold text-stone-800 shadow-sm transition hover:-translate-y-0.5 hover:border-stone-400"
             >
               <MessageCircle size={16} />
-              Обсудить заказ
+              Обговорити замовлення
             </Link>
           </div>
         </div>
@@ -51,7 +52,7 @@ export function Hero() {
                   Scandi-boho
                 </span>
                 <p className="text-2xl font-semibold leading-tight">
-                  Корзина
+                  Кошик
                   <br />
                   «Прованс»
                 </p>
@@ -59,14 +60,14 @@ export function Hero() {
               </div>
               <div className="flex h-28 w-28 items-center justify-center rounded-full bg-white/90 shadow-inner shadow-stone-900/5">
                 <span className="text-lg font-semibold text-stone-800">
-                  $65
+                  2 500 ₴
                 </span>
               </div>
             </div>
           </div>
           <div className="mt-4 flex items-center gap-3 text-sm text-stone-600">
             <span className="h-2 w-2 rounded-full bg-[#c56744]" />
-            Доставка и упаковка обсуждаются индивидуально
+            Доставка та пакування обговорюються індивідуально
           </div>
         </div>
       </div>
