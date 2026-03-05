@@ -118,9 +118,9 @@ export function ProductForm({
             defaultValue={initialValues?.status || "draft"}
             className="w-full rounded-2xl border border-stone-200 bg-white px-4 py-3 text-sm"
           >
-            <option value="draft">Draft</option>
-            <option value="published">Published</option>
-            <option value="archived">Archived</option>
+            <option value="draft">Чернетка</option>
+            <option value="published">Опубліковано</option>
+            <option value="archived">Архів</option>
           </select>
         </label>
       </div>
@@ -205,7 +205,7 @@ export function ProductForm({
             defaultChecked={initialValues?.isFeatured}
             className="h-4 w-4 rounded border-stone-300"
           />
-          Featured
+          Популярний
         </label>
         <label className="inline-flex items-center gap-3">
           <input
@@ -214,7 +214,7 @@ export function ProductForm({
             defaultChecked={initialValues?.isNew}
             className="h-4 w-4 rounded border-stone-300"
           />
-          New
+          Новинка
         </label>
       </div>
 

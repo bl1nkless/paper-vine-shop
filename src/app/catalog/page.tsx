@@ -11,7 +11,7 @@ import { buildWhatsAppLink } from "@/lib/whatsapp";
 export const metadata: Metadata = {
   title: "Каталог виробів | Pletenie.Soul",
   description:
-    "Каталог Pletenie.Soul тепер читає дані з Prisma/PostgreSQL і готовий до подальшої fullstack-міграції.",
+    "Каталог виробів Pletenie.Soul ручної роботи з паперової лози.",
 };
 
 export const dynamic = "force-dynamic";
@@ -46,8 +46,7 @@ export default async function CatalogPage() {
               Каталог виробів
             </h1>
             <p className="mx-auto mt-6 max-w-2xl text-center text-base leading-relaxed text-gray-600 md:text-lg">
-              Це вже не статичний масив: сторінка читає опубліковані товари та
-              категорії з PostgreSQL через Prisma service layer.
+              Авторські вироби з паперової лози для дому, зберігання та декору.
             </p>
 
             <div className="mt-10 flex flex-wrap items-center justify-center gap-3 border-y border-[#dcd9d4] py-4">
@@ -74,8 +73,8 @@ export default async function CatalogPage() {
                   Поки немає опублікованих товарів
                 </p>
                 <p className="mx-auto mt-3 max-w-xl text-sm leading-relaxed text-gray-600">
-                  Запусти `npm run db:seed` після міграції, і тут одразу
-                  з&apos;являться тестові позиції з бази.
+                  Опубліковані товари з&apos;являться тут одразу після додавання в
+                  адмінпанелі.
                 </p>
                 <Link
                   href="/admin/products"
@@ -120,10 +119,7 @@ export default async function CatalogPage() {
                         </p>
                       </div>
 
-                      <div className="flex items-center justify-between gap-4">
-                        <span className="text-sm text-gray-500">
-                          slug: {product.slug}
-                        </span>
+                      <div className="flex items-center justify-end gap-4">
                         <Link
                           href={whatsappHref}
                           target="_blank"

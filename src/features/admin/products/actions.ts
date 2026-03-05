@@ -107,8 +107,8 @@ export async function createProductAction(formData: FormData) {
     data: {
       title,
       slug,
-      categoryId: data.categoryId,
-      priceCents: parseMoneyToCents(data.price),
+      categoryId: data.categoryId || "",
+      priceCents: parseMoneyToCents(data.price || "0"),
       shortDescription: data.shortDescription || null,
       description: data.description || null,
       dimensions: data.dimensions || null,
@@ -153,8 +153,8 @@ export async function updateProductAction(formData: FormData) {
     data: {
       title: data.title,
       slug,
-      categoryId: data.categoryId,
-      priceCents: parseMoneyToCents(data.price),
+      categoryId: data.categoryId || "",
+      priceCents: parseMoneyToCents(data.price || "0"),
       shortDescription: data.shortDescription || null,
       description: data.description || null,
       dimensions: data.dimensions || null,
@@ -192,6 +192,23 @@ export async function archiveProductAction(formData: FormData) {
     data: {
       status: "archived",
     },
+  });
+
+  revalidatePath("/catalog");
+  revalidatePath("/admin");
+  revalidatePath("/admin/products");
+}
+
+export async function deleteProductAction(formData: FormData) {
+  await requireOwnerSession();
+  const id = getString(formData, "id");
+
+  if (!id) {
+    throw new Error("Missing product id.");
+  }
+
+  await prisma.product.delete({
+    where: { id },
   });
 
   revalidatePath("/catalog");

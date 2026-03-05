@@ -6,7 +6,7 @@ import {
 } from "@/application/admin/get-admin-products";
 
 import { ProductForm } from "../../product-form";
-import { updateProductAction } from "../../actions";
+import { updateProductAction } from "@/features/admin/products/actions";
 
 export default async function AdminEditProductPage({
   params,

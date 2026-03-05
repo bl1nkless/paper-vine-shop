@@ -1,6 +1,6 @@
 import { getAdminCategories } from "@/application/admin/get-admin-products";
 
-import { createProductAction } from "../actions";
+import { createProductAction } from "@/features/admin/products/actions";
 import { ProductForm } from "../product-form";
 
 export default async function AdminNewProductPage() {
