@@ -27,11 +27,13 @@ async function main() {
   });
 
   if (existingOwner) {
+    const passwordHash = await hashPassword(ownerPassword);
     const owner = await prisma.user.update({
       where: { email: ownerEmail },
       data: {
         name: "Shop Owner",
         role: "owner",
+        passwordHash,
       },
     });
 
