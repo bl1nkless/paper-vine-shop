@@ -1,11 +1,9 @@
 import { notFound } from "next/navigation";
 
-import {
-  getAdminCategories,
-  getAdminProductById,
-} from "@/application/admin/get-admin-products";
+import { getAdminCategories } from "@/application/catalog/get-admin-categories";
+import { getAdminProductById } from "@/application/catalog/get-admin-product-by-id";
 
-import { ProductForm } from "../../product-form";
+import { ProductForm } from "@/features/admin/products/product-form";
 import { updateProductAction } from "@/features/admin/products/actions";
 
 export default async function AdminEditProductPage({
@@ -51,10 +49,23 @@ export default async function AdminEditProductPage({
             materials: product.materials.join(", "),
             care: product.care || "",
             imageUrl: product.images[0]?.publicUrl || "",
+            seoTitle: product.seoTitle || "",
+            seoDescription: product.seoDescription || "",
             availability: product.availability,
             status: product.status,
             isFeatured: product.isFeatured,
             isNew: product.isNew,
+            variants: product.variants.map((variant) => ({
+              id: variant.id,
+              title: variant.title,
+              sku: variant.sku || "",
+              size: variant.size || "",
+              color: variant.color || "",
+              priceOverride:
+                variant.priceCents === null ? "" : String(variant.priceCents / 100),
+              availability: variant.availability,
+              sortOrder: variant.sortOrder,
+            })),
           }}
         />
       </div>

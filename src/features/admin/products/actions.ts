@@ -7,23 +7,51 @@ import {
   productFormSchema,
   updateProductFormSchema,
 } from "@/domain/catalog/schemas";
-import { prisma } from "@/infrastructure/db/prisma";
 import { auth } from "@/auth";
-import { slugify } from "@/lib/slug";
-
-function parseMoneyToCents(rawValue: string) {
-  const normalized = rawValue.replace(",", ".").trim();
-  const numeric = Number(normalized);
-
-  if (!Number.isFinite(numeric) || numeric < 0) {
-    throw new Error("Некоректна ціна.");
-  }
-
-  return Math.round(numeric * 100);
-}
+import { createProduct } from "@/application/catalog/create-product";
+import { updateProduct } from "@/application/catalog/update-product";
+import { archiveProduct } from "@/application/catalog/archive-product";
+import { deleteProduct } from "@/application/catalog/delete-product";
 
 function getString(formData: FormData, key: string) {
   return String(formData.get(key) || "").trim();
+}
+
+function getVariants(formData: FormData) {
+  const raw = getString(formData, "variants");
+
+  if (!raw) {
+    return [];
+  }
+
+  try {
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed)) {
+      return [];
+    }
+
+    return parsed
+      .filter((variant) => {
+        if (!variant || typeof variant !== "object") {
+          return false;
+        }
+
+        const candidate = variant as Record<string, unknown>;
+        return Boolean(
+          String(candidate.title || "").trim() ||
+            String(candidate.sku || "").trim() ||
+            String(candidate.size || "").trim() ||
+            String(candidate.color || "").trim() ||
+            String(candidate.priceOverride || "").trim(),
+        );
+      })
+      .map((variant) => ({
+        ...variant,
+        sortOrder: Number((variant as Record<string, unknown>).sortOrder ?? 0),
+      }));
+  } catch {
+    throw new Error("Invalid variants payload.");
+  }
 }
 
 function getProductFormInput(formData: FormData) {
@@ -38,10 +66,13 @@ function getProductFormInput(formData: FormData) {
     imageUrl: getString(formData, "imageUrl") || undefined,
     materials: getString(formData, "materials") || undefined,
     care: getString(formData, "care") || undefined,
+    seoTitle: getString(formData, "seoTitle") || undefined,
+    seoDescription: getString(formData, "seoDescription") || undefined,
     availability: getString(formData, "availability") || "made_to_order",
     status: getString(formData, "status") || "draft",
     isFeatured: formData.get("isFeatured") === "on",
     isNew: formData.get("isNew") === "on",
+    variants: getVariants(formData),
   };
 }
 
@@ -59,38 +90,6 @@ async function requireOwnerSession() {
   return session;
 }
 
-async function upsertProductImage(productId: string, imageUrl: string, title: string) {
-  const existingImage = await prisma.productImage.findFirst({
-    where: { productId },
-    orderBy: { sortOrder: "asc" },
-  });
-
-  if (!imageUrl) {
-    return;
-  }
-
-  if (existingImage) {
-    await prisma.productImage.update({
-      where: { id: existingImage.id },
-      data: {
-        publicUrl: imageUrl,
-        storageKey: imageUrl,
-        alt: title,
-      },
-    });
-    return;
-  }
-
-  await prisma.productImage.create({
-    data: {
-      productId,
-      publicUrl: imageUrl,
-      storageKey: imageUrl,
-      alt: title,
-    },
-  });
-}
-
 export async function createProductAction(formData: FormData) {
   const session = await requireOwnerSession();
   const parsed = productFormSchema.safeParse(getProductFormInput(formData));
@@ -99,34 +98,7 @@ export async function createProductAction(formData: FormData) {
     throw new Error(parsed.error.issues[0]?.message || "Invalid product form.");
   }
 
-  const data = parsed.data;
-  const title = data.title;
-  const slug = slugify(data.slug || title);
-
-  const product = await prisma.product.create({
-    data: {
-      title,
-      slug,
-      categoryId: data.categoryId || "",
-      priceCents: parseMoneyToCents(data.price || "0"),
-      shortDescription: data.shortDescription || null,
-      description: data.description || null,
-      dimensions: data.dimensions || null,
-      materials: (data.materials || "")
-        .split(",")
-        .map((item) => item.trim())
-        .filter(Boolean),
-      care: data.care || null,
-      availability: data.availability,
-      status: data.status,
-      isFeatured: data.isFeatured ?? false,
-      isNew: data.isNew ?? false,
-      createdById: session.user.id,
-      updatedById: session.user.id,
-    },
-  });
-
-  await upsertProductImage(product.id, data.imageUrl || "", title);
+  await createProduct(parsed.data, session.user.id);
 
   revalidatePath("/catalog");
   revalidatePath("/admin");
@@ -145,33 +117,7 @@ export async function updateProductAction(formData: FormData) {
     throw new Error(parsed.error.issues[0]?.message || "Invalid product form.");
   }
 
-  const data = parsed.data;
-  const slug = slugify(data.slug || data.title);
-
-  await prisma.product.update({
-    where: { id: data.id },
-    data: {
-      title: data.title,
-      slug,
-      categoryId: data.categoryId || "",
-      priceCents: parseMoneyToCents(data.price || "0"),
-      shortDescription: data.shortDescription || null,
-      description: data.description || null,
-      dimensions: data.dimensions || null,
-      materials: (data.materials || "")
-        .split(",")
-        .map((item) => item.trim())
-        .filter(Boolean),
-      care: data.care || null,
-      availability: data.availability,
-      status: data.status,
-      isFeatured: data.isFeatured ?? false,
-      isNew: data.isNew ?? false,
-      updatedById: session.user.id,
-    },
-  });
-
-  await upsertProductImage(data.id, data.imageUrl || "", data.title);
+  await updateProduct(parsed.data, session.user.id);
 
   revalidatePath("/catalog");
   revalidatePath("/admin");
@@ -187,12 +133,7 @@ export async function archiveProductAction(formData: FormData) {
     throw new Error("Missing product id.");
   }
 
-  await prisma.product.update({
-    where: { id },
-    data: {
-      status: "archived",
-    },
-  });
+  await archiveProduct(id);
 
   revalidatePath("/catalog");
   revalidatePath("/admin");
@@ -207,9 +148,7 @@ export async function deleteProductAction(formData: FormData) {
     throw new Error("Missing product id.");
   }
 
-  await prisma.product.delete({
-    where: { id },
-  });
+  await deleteProduct(id);
 
   revalidatePath("/catalog");
   revalidatePath("/admin");

@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { formatMoneyFromCents } from "@/lib/format-money";
 import { archiveProductAction } from "./actions";
-import { DeleteProductButton } from "./delete-product-button";
 import { availabilityLabel, statusLabel } from "./product-labels";
 
 type Product = {
@@ -81,9 +80,6 @@ export function ProductTable({ products }: Props) {
                         Архівувати
                       </button>
                     </form>
-                  )}
-                  {product.status !== "published" && (
-                    <DeleteProductButton id={product.id} />
                   )}
                 </div>
               </td>
