@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 type CatalogItem = {
   title: string;
   price: string;
@@ -99,11 +101,12 @@ export function CatalogSection() {
               style={{ animationDelay: item.delay }}
             >
               <div className="relative mb-5 aspect-[4/5] overflow-hidden rounded-xl bg-[#e3e0db]">
-                <img
+                <Image
                   src={item.image}
                   alt={item.alt}
-                  className="h-full w-full object-cover transition duration-700 ease-in-out group-hover:scale-105"
-                  loading="lazy"
+                  fill
+                  className="object-cover transition duration-700 ease-in-out group-hover:scale-105"
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 />
 
                 <div className="absolute inset-x-0 bottom-4 flex justify-center translate-y-4 opacity-0 transition duration-300 group-hover:translate-y-0 group-hover:opacity-100">
