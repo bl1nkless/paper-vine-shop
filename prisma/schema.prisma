@@ -1,0 +1,186 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum UserRole {
+  owner
+  admin
+  editor
+}
+
+enum ProductStatus {
+  draft
+  published
+  archived
+}
+
+enum ProductAvailability {
+  in_stock
+  made_to_order
+  out_of_stock
+}
+
+enum OrderStatus {
+  new
+  telegram_opened
+  contacted
+  in_progress
+  completed
+  cancelled
+}
+
+model User {
+  id            String   @id @default(cuid())
+  email         String   @unique
+  name          String?
+  passwordHash  String?
+  role          UserRole @default(owner)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  productsCreated Product[] @relation("ProductCreatedBy")
+  productsUpdated Product[] @relation("ProductUpdatedBy")
+}
+
+model Category {
+  id             String   @id @default(cuid())
+  title          String
+  slug           String   @unique
+  description    String?
+  sortOrder      Int      @default(100)
+  isVisible      Boolean  @default(true)
+  seoTitle       String?
+  seoDescription String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  products Product[]
+}
+
+model Product {
+  id               String              @id @default(cuid())
+  title            String
+  slug             String              @unique
+  shortDescription String?
+  description      String?
+  priceCents       Int
+  currency         String              @default("UAH")
+  dimensions       String?
+  materials        String[]
+  care             String?
+  availability     ProductAvailability @default(made_to_order)
+  status           ProductStatus       @default(draft)
+  isFeatured       Boolean             @default(false)
+  isNew            Boolean             @default(false)
+  sortOrder        Int                 @default(100)
+  seoTitle         String?
+  seoDescription   String?
+  categoryId       String
+  createdById      String?
+  updatedById      String?
+  createdAt        DateTime            @default(now())
+  updatedAt        DateTime            @updatedAt
+
+  category   Category         @relation(fields: [categoryId], references: [id])
+  images     ProductImage[]
+  variants   ProductVariant[]
+  orderItems OrderItem[]
+  createdBy  User?            @relation("ProductCreatedBy", fields: [createdById], references: [id])
+  updatedBy  User?            @relation("ProductUpdatedBy", fields: [updatedById], references: [id])
+
+  @@index([categoryId])
+  @@index([status, availability])
+}
+
+model ProductImage {
+  id        String   @id @default(cuid())
+  productId String
+  storageKey String
+  publicUrl String
+  alt       String
+  width     Int?
+  height    Int?
+  sortOrder Int      @default(100)
+  createdAt DateTime @default(now())
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@index([productId])
+}
+
+model ProductVariant {
+  id           String              @id @default(cuid())
+  productId    String
+  title        String
+  sku          String?
+  priceCents   Int?
+  size         String?
+  color        String?
+  availability ProductAvailability @default(made_to_order)
+  sortOrder    Int                 @default(100)
+  createdAt    DateTime            @default(now())
+  updatedAt    DateTime            @updatedAt
+
+  product    Product     @relation(fields: [productId], references: [id], onDelete: Cascade)
+  orderItems OrderItem[]
+
+  @@index([productId])
+}
+
+model Order {
+  id               String      @id @default(cuid())
+  orderNumber      String      @unique
+  status           OrderStatus @default(new)
+  customerName     String
+  customerTelegram String?
+  customerPhone    String?
+  customerComment  String?
+  subtotalCents    Int
+  currency         String      @default("UAH")
+  telegramOpenedAt DateTime?
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @updatedAt
+
+  items OrderItem[]
+
+  @@index([status, createdAt])
+}
+
+model OrderItem {
+  id                     String          @id @default(cuid())
+  orderId                String
+  productId              String?
+  productVariantId       String?
+  productTitleSnapshot   String
+  variantTitleSnapshot   String?
+  unitPriceCentsSnapshot Int
+  quantity               Int
+  lineTotalCents         Int
+
+  order          Order           @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product        Product?        @relation(fields: [productId], references: [id], onDelete: SetNull)
+  productVariant ProductVariant? @relation(fields: [productVariantId], references: [id], onDelete: SetNull)
+
+  @@index([orderId])
+  @@index([productId])
+}
+
+model SiteSettings {
+  id                    String   @id @default("site")
+  brandName             String
+  defaultLocale         String   @default("uk")
+  telegramUsername      String?
+  telegramBotChatId     String?
+  email                 String?
+  phone                 String?
+  instagramUrl          String?
+  facebookUrl           String?
+  defaultSeoTitle       String?
+  defaultSeoDescription String?
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+}
