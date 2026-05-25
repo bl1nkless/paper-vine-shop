@@ -1,10 +1,9 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import AuthError from "next-auth";
 
-import { createAdminSessionCookie, getAdminSession } from "@/lib/admin-session";
-import { verifyPassword } from "@/lib/password";
-import { prisma } from "@/infrastructure/db/prisma";
+import { signIn, auth } from "@/auth";
 
 type LoginState = {
   error?: string;
@@ -23,35 +22,29 @@ export async function loginAction(
     };
   }
 
-  if (!process.env.DATABASE_URL) {
-    return {
-      error: "DATABASE_URL не налаштований. Спочатку підключи базу.",
-    };
+  try {
+    await signIn("credentials", {
+      email,
+      password,
+      redirect: false,
+    });
+  } catch (error) {
+    if (error instanceof AuthError) {
+      return {
+        error: "Невірний email або пароль.",
+      };
+    }
+
+    throw error;
   }
-
-  const user = await prisma.user.findUnique({
-    where: { email },
-  });
-
-  if (!user?.passwordHash || !verifyPassword(password, user.passwordHash)) {
-    return {
-      error: "Невірний email або пароль.",
-    };
-  }
-
-  await createAdminSessionCookie({
-    userId: user.id,
-    email: user.email,
-    role: user.role,
-  });
 
   redirect("/admin");
 }
 
 export async function redirectLoggedInUser() {
-  const session = await getAdminSession();
+  const session = await auth();
 
-  if (session) {
+  if (session?.user) {
     redirect("/admin");
   }
 }

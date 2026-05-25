@@ -1,10 +1,9 @@
 "use server";
 
-import { redirect } from "next/navigation";
-
-import { clearAdminSessionCookie } from "@/lib/admin-session";
+import { signOut } from "@/auth";
 
 export async function logoutAction() {
-  await clearAdminSessionCookie();
-  redirect("/admin/login");
+  await signOut({
+    redirectTo: "/admin/login",
+  });
 }

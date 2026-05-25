@@ -9,6 +9,7 @@
     "lint": "eslint .",
     "db:migrate": "prisma migrate dev",
     "db:generate": "prisma generate",
+    "db:seed-owner": "tsx scripts/seed-owner.ts",
     "db:seed": "node prisma/seed.mjs"
   },
   "dependencies": {
@@ -18,16 +19,19 @@
     "@sanity/client": "^7.13.0",
     "@sanity/image-url": "^1.2.0",
     "@sanity/vision": "^4.19.0",
+    "bcryptjs": "^3.0.3",
     "clsx": "^2.1.1",
     "lucide-react": "^0.555.0",
     "next": "^16.0.7",
+    "next-auth": "^4.24.14",
     "next-sanity": "^11.6.10",
     "pg": "^8.21.0",
     "prisma": "^7.8.0",
     "react": "19.2.0",
     "react-dom": "19.2.0",
     "sanity": "^4.19.0",
-    "tailwind-merge": "^3.4.0"
+    "tailwind-merge": "^3.4.0",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
@@ -40,6 +44,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.0.4",
     "tailwindcss": "^4",
+    "tsx": "^4.22.3",
     "typescript": "^5"
   }
 }

@@ -7,25 +7,30 @@ const globalForPrisma = globalThis as typeof globalThis & {
   prismaPool?: Pool;
 };
 
-const connectionPool =
-  globalForPrisma.prismaPool ??
-  new Pool({
-    connectionString: process.env.DATABASE_URL,
-  });
+function createPrismaClient() {
+  const connectionPool =
+    globalForPrisma.prismaPool ??
+    new Pool({
+      connectionString: process.env.DATABASE_URL,
+    });
 
-const adapter = new PrismaPg(connectionPool);
+  const adapter = new PrismaPg(connectionPool);
 
-export const prisma =
-  globalForPrisma.prisma ??
-  new PrismaClient({
+  if (process.env.NODE_ENV !== "production") {
+    globalForPrisma.prismaPool = connectionPool;
+  }
+
+  return new PrismaClient({
     adapter,
     log:
       process.env.NODE_ENV === "development"
         ? ["query", "error", "warn"]
         : ["error"],
   });
+}
+
+export const prisma = globalForPrisma.prisma ?? createPrismaClient();
 
 if (process.env.NODE_ENV !== "production") {
   globalForPrisma.prisma = prisma;
-  globalForPrisma.prismaPool = connectionPool;
 }

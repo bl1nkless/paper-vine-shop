@@ -92,8 +92,7 @@ model Product {
   createdBy  User?            @relation("ProductCreatedBy", fields: [createdById], references: [id])
   updatedBy  User?            @relation("ProductUpdatedBy", fields: [updatedById], references: [id])
 
-  @@index([categoryId])
-  @@index([status, availability])
+  @@index([categoryId, status])
 }
 
 model ProductImage {
@@ -167,6 +166,7 @@ model OrderItem {
 
   @@index([orderId])
   @@index([productId])
+  @@index([productVariantId])
 }
 
 model SiteSettings {

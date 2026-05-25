@@ -37,21 +37,46 @@ _(Якщо зображення доступне у папці public)_
    npm install
    ```
 
-3. **Налаштуйте змінні середовища:**
-   Створіть файл `.env.local` в корені проекту та додайте необхідні ключі (якщо використовуються, наприклад, для Sanity):
+3. **Підніміть локальну PostgreSQL через Docker:**
+
+   ```bash
+   docker compose up -d postgres
+   ```
+
+4. **Налаштуйте змінні середовища:**
+   Створіть файл `.env` або `.env.local` в корені проекту та додайте необхідні ключі.
+   Для локальної Prisma/PostgreSQL можна почати з такого:
+
+   ```env
+   DATABASE_URL="postgresql://postgres:postgres@localhost:5432/paper_vine_shop?schema=public"
+   AUTH_SECRET="generate-with-openssl-rand-base64-32"
+   OWNER_EMAIL="owner@example.com"
+   OWNER_INITIAL_PASSWORD="change-me-before-production"
+   ```
+
+   Якщо ще використовується Sanity, додайте також:
 
    ```env
    NEXT_PUBLIC_SANITY_PROJECT_ID=your_project_id
    NEXT_PUBLIC_SANITY_DATASET=production
    ```
 
-4. **Запустіть сервер розробки:**
+5. **Згенеруйте Prisma client, застосуйте міграції та наповніть БД:**
+
+   ```bash
+   npm run db:generate
+   npm run db:migrate -- --name init_fullstack_schema
+   npm run db:seed-owner
+   npm run db:seed
+   ```
+
+6. **Запустіть сервер розробки:**
 
    ```bash
    npm run dev
    ```
 
-5. **Відкрийте сайт:**
+7. **Відкрийте сайт:**
    Перейдіть за посиланням [http://localhost:3000](http://localhost:3000).
 
 ## 📂 Структура папок

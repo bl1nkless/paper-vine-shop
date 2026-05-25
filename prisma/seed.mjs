@@ -1,4 +1,4 @@
-import { randomBytes, scryptSync } from "node:crypto";
+import "dotenv/config";
 
 import { PrismaClient } from "@prisma/client";
 import { Pool } from "pg";
@@ -11,31 +11,18 @@ const pool = new Pool({
 const adapter = new PrismaPg(pool);
 const prisma = new PrismaClient({ adapter });
 
-function hashPassword(password) {
-  const salt = randomBytes(16).toString("hex");
-  const hash = scryptSync(password, salt, 64).toString("hex");
-
-  return `${salt}:${hash}`;
-}
-
 async function main() {
   const ownerEmail = process.env.OWNER_EMAIL || "owner@example.com";
-  const ownerPassword =
-    process.env.OWNER_INITIAL_PASSWORD || "change-me-before-production";
 
-  const owner = await prisma.user.upsert({
+  const owner = await prisma.user.findUnique({
     where: { email: ownerEmail },
-    update: {
-      role: "owner",
-      passwordHash: hashPassword(ownerPassword),
-    },
-    create: {
-      email: ownerEmail,
-      name: "Shop Owner",
-      role: "owner",
-      passwordHash: hashPassword(ownerPassword),
-    },
   });
+
+  if (!owner || owner.role !== "owner") {
+    throw new Error(
+      `Owner account not found for ${ownerEmail}. Run "npm run db:seed-owner" first.`,
+    );
+  }
 
   const categories = await Promise.all([
     prisma.category.upsert({

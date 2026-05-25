@@ -16,8 +16,8 @@ export default async function AdminLoginPage() {
           Pletenie.Soul
         </h1>
         <p className="mt-4 text-sm leading-relaxed text-stone-600">
-          Перший owner login для migration MVP. Після `db:seed` використовуй
-          `OWNER_EMAIL` та `OWNER_INITIAL_PASSWORD` з `.env`.
+          Перший owner login для migration MVP. Після `db:seed-owner`
+          використовуй `OWNER_EMAIL` та `OWNER_INITIAL_PASSWORD` з `.env`.
         </p>
         <div className="mt-8">
           <LoginForm />

@@ -1,8 +1,10 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 
-import { requireAdminSession } from "@/lib/admin-session";
+import { auth } from "@/auth";
 
 import { logoutAction } from "./logout-action";
+
 
 export const dynamic = "force-dynamic";
 
@@ -11,7 +13,15 @@ export default async function AdminProtectedLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const session = await requireAdminSession();
+  const session = await auth();
+
+  if (!session?.user) {
+    redirect("/admin/login");
+  }
+
+  if (session.user.role !== "owner") {
+    redirect("/admin/login");
+  }
 
   return (
     <div className="min-h-screen bg-stone-100">
@@ -35,7 +45,7 @@ export default async function AdminProtectedLayout({
               Products
             </Link>
             <span className="hidden rounded-full bg-stone-100 px-4 py-2 md:inline-flex">
-              {session.email}
+              {session.user.email}
             </span>
             <form action={logoutAction}>
               <button
