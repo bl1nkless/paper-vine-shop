@@ -1,7 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import AuthError from "next-auth";
+import { AuthError } from "next-auth";
 
 import { signIn, auth } from "@/auth";
 

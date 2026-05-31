@@ -1,4 +1,4 @@
-import NextAuth from "next-auth";
+import NextAuth, { type NextAuthConfig } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { z } from "zod";
 
@@ -10,7 +10,7 @@ const loginSchema = z.object({
   password: z.string().min(1),
 });
 
-export const { auth, handlers, signIn, signOut } = NextAuth({
+const authConfig = {
   providers: [
     CredentialsProvider({
       name: "Credentials",
@@ -72,4 +72,6 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
       return session;
     },
   },
-});
+} satisfies NextAuthConfig;
+
+export const { auth, handlers, signIn, signOut } = NextAuth(authConfig);
